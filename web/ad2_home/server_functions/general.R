@@ -1,12 +1,13 @@
 ###############################################################################
 # SOURCE() and LIBRARY()
 ###############################################################################
-library(plyr)
-library(reshape)
-library(ggplot2)
-library(gridExtra)
-library(boot)
-library(ROCR)
+library(shiny, quietly=T)
+library(plyr, quietly=T)
+library(reshape, quietly=T)
+library(ggplot2, quietly=T)
+library(gridExtra, quietly=T)
+library(boot, quietly=T)
+library(ROCR, quietly=T)
 
 ###############################################################################
 # FUNCTIONS
