@@ -11,6 +11,8 @@ source("server_functions/mp2.R")
 
 # All session variables and settings
 all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação")
+data.dir <- "data"
+
 theme_set(theme_bw(base_size=15))
 
 # shinyServer function
@@ -32,18 +34,13 @@ shinyServer(function(input, output) {
   # PDF Download button
   output$download_mp_pdf_button <- downloadHandler(
     filename = function() {
-      paste(data.dir, "/mini_project_", mp.number(), "/", 
-            all.mini.projects[mp.number()], ".pdf", sep ="")
+      paste(data.dir, "/", all.mini.projects[mp.number()], ".pdf", sep ="")
     },
     content = function(file) {
-      mp.file <- paste(data.dir, "/mini_project_", mp.number(), "/", 
-                       all.mini.projects[mp.number()], ".pdf", sep ="")
+      mp.file <- paste(data.dir, "/", all.mini.projects[mp.number()], ".pdf", sep ="")
       
       if (file.exists(mp.file)){
         file.copy(mp.file, file)
-      }else{
-        boot.analysis.file <- paste(data.dir, "/mini_project_default/MP 0 - Default.pdf", sep ="")
-        file.copy(boot.analysis.file, file)    
       }
     },
     contentType = "application/pdf"
