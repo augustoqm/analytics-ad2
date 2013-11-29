@@ -79,7 +79,7 @@ shinyUI(bootstrapPage(
                                      tags$hr(),
                                      
                                      h4("Análise Visual - Comparação dos Modelos"),
-                                     em("Intervalos de Confiança (95%) da Média - Acurácia"),
+                                     em("Intervalos de Confiança (95%) da Média - F-Measure"),
                                      plotOutput("mp2_ic_models_plot"),
                                      tags$hr(),
                                      

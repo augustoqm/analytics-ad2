@@ -60,9 +60,12 @@ Mp2GetCIModels <- function(model.validation){
 }
 
 Mp2GetConfMatrixBinary <- function (student.prediction, mp.labels){
-  bin.class.levels <- levels(student.prediction$classe_prevista_binaria)
+  
+  # Compare the tables with the same number of lines
+  student.prediction <- student.prediction[1:nrow(mp.labels),]
   
   # Binary data
+  bin.class.levels <- c("ruim", "bom")
   bin.confusion.data <- NULL
   for (i in bin.class.levels){
     for (j in bin.class.levels){
@@ -74,14 +77,17 @@ Mp2GetConfMatrixBinary <- function (student.prediction, mp.labels){
     }
   }
   
-  bin.confusion.data$class_type <- rep("Qualidade Binária", nrow(bin.confusion.data))
+  bin.confusion.data$class1 <- factor(bin.confusion.data$class1, 
+                                      levels=bin.class.levels)
+  bin.confusion.data$class2 <- factor(bin.confusion.data$class2, 
+                                      levels=bin.class.levels)
   
   # Plot the Confusion Matrix
   gg <- ggplot(bin.confusion.data, aes(x = class1, y = class2)) + 
     geom_tile(aes(fill = values), color = gray) + 
     geom_text(aes(fill = values, label = values), 
               colour = "black", size = 3) + 
-    scale_fill_gradient(low = "yellow", high = "darkorange") + 
+    scale_fill_gradient(low = "yellow", high = "red") + 
     labs(list(x="Classe Prevista", y="Classe Real", fill="Matches")) + 
     theme(axis.ticks = element_blank(),
           axis.text.x = element_text(angle = 45, hjust = 1))
@@ -90,9 +96,12 @@ Mp2GetConfMatrixBinary <- function (student.prediction, mp.labels){
 }
 
 Mp2GetConfMatrixMultiple <- function (student.prediction, mp.labels){
-  mul.class.levels <- levels(student.prediction$classe_prevista_multipla)
+
+  # Compare the tables with the same number of lines
+  student.prediction <- student.prediction[1:nrow(mp.labels),]
   
   # Multiple data
+  mul.class.levels <- c("muito_ruim", "ruim", "mais_ou_menos", "bom", "muito_bom")
   mul.confusion.data <- NULL
   for (i in mul.class.levels){
     for (j in mul.class.levels){
@@ -104,14 +113,17 @@ Mp2GetConfMatrixMultiple <- function (student.prediction, mp.labels){
     }
   }
   
-  mul.confusion.data$class_type <- rep("Qualidade Múltipla", nrow(mul.confusion.data))
+  mul.confusion.data$class1 <- factor(mul.confusion.data$class1, 
+                                      levels=mul.class.levels)
+  mul.confusion.data$class2 <- factor(mul.confusion.data$class2, 
+                                      levels=mul.class.levels)
   
   # Plot the Confusion Matrix
   gg <- ggplot(mul.confusion.data, aes(x = class1, y = class2)) + 
     geom_tile(aes(fill = values), color = gray) + 
     geom_text(aes(fill = values, label = values), 
               colour = "black", size = 3) + 
-    scale_fill_gradient(low = "yellow", high = "darkorange") + 
+    scale_fill_gradient(low = "yellow", high = "red") + 
     labs(list(x="Classe Prevista", y="Classe Real", fill="Matches")) + 
     theme(axis.ticks = element_blank(),
           axis.text.x = element_text(angle = 45, hjust = 1)

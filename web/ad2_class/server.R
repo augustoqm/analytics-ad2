@@ -261,7 +261,7 @@ shinyServer(function(input, output) {
   output$mp2_confusion_matrix_bin <- renderPlot({
     tryCatch(expr={
       # Plot the Confusion Matrix
-      print(Mp2GetConfMatrixBinaria(student.mp.data()$prediction, mp.data()$wine_labels))
+      print(Mp2GetConfMatrixBinary(student.mp.data()$prediction, mp.data()$wine_labels))
       
     }, error=function(e){
       cat("Error: Wrong data >>", group.dir.name(), "(MP2: Prediction, Binary Confusion Matrix)\n")
