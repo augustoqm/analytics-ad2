@@ -14,6 +14,7 @@ all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação")
 data.dir <- "data"
 
 theme_set(theme_bw(base_size=15))
+options(shiny.maxRequestSize=30*1024^2)
 
 # shinyServer function
 shinyServer(function(input, output) {
