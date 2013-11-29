@@ -31,7 +31,7 @@ Mp2GetCIModels <- function(model.validation){
     c(fmeasure=mean(perf.quality$fmeasure))
   })
   
-  # Calculate the CI for the Classification accuracies
+  # Calculate the CI for the Classification metric
   binary.ci <- ddply(binary.performance, .(nome_modelo), 
                      BootCI.Mean, "fmeasure", .95)
   binary.ci$class_type <- rep("Qualidade Binária", nrow(binary.ci))
