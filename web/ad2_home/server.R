@@ -1,9 +1,9 @@
 ###############################################################################
-# SOURCE() and LIBRARY()
+# SOURCE()
 ###############################################################################
-source("server_functions/general.R")
-source("server_functions/mp1.R")
-source("server_functions/mp2.R")
+source("../ad2_functions/general.R")
+source("../ad2_functions/mp1.R")
+source("../ad2_functions/mp2.R")
 
 ###############################################################################
 # SHINY SERVER
