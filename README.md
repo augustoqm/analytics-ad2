@@ -20,6 +20,14 @@ library(shiny)
 runGitHub("analytics-ad2", "augustoqm", subdir = "web/ad2_home")
 ```
 
+Caso deseje executar esse aplicativo *offline* faça o download desse repositório
+e no diretório raiz execute os seguintes comandos R:
+
+```R
+library(shiny)
+runApp("web/ad2_home")
+```
+
 Atenção
 -------
 As versões do aplicativo **ad2_class** também estão disponíveis nesse repositório, 

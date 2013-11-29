@@ -63,7 +63,7 @@ Mp2GetConfMatrixBinary <- function (student.prediction, mp.labels){
   
   # Compare the tables with the same number of lines
   student.prediction <- student.prediction[1:nrow(mp.labels),]
-  
+
   # Binary data
   bin.class.levels <- c("ruim", "bom")
   bin.confusion.data <- NULL
@@ -72,15 +72,13 @@ Mp2GetConfMatrixBinary <- function (student.prediction, mp.labels){
       bin.confusion.data <- rbind(bin.confusion.data, 
                                   data.frame(class1 = i, 
                                              class2 = j,
-                                             values = sum((student.prediction$classe_prevista_binaria == i) & 
-                                                            (mp.labels$qualidade_binaria == j))))
+                                             values = sum((student.prediction[,"classe_prevista_binaria"] == i) & 
+                                                            (mp.labels[,"qualidade_binaria"] == j))))
     }
   }
-  
-  bin.confusion.data$class1 <- factor(bin.confusion.data$class1, 
-                                      levels=bin.class.levels)
-  bin.confusion.data$class2 <- factor(bin.confusion.data$class2, 
-                                      levels=bin.class.levels)
+
+  bin.confusion.data$class1 <- factor(bin.confusion.data$class1, levels=bin.class.levels)
+  bin.confusion.data$class2 <- factor(bin.confusion.data$class2, levels=bin.class.levels)
   
   # Plot the Confusion Matrix
   gg <- ggplot(bin.confusion.data, aes(x = class1, y = class2)) + 
@@ -103,20 +101,19 @@ Mp2GetConfMatrixMultiple <- function (student.prediction, mp.labels){
   # Multiple data
   mul.class.levels <- c("muito_ruim", "ruim", "mais_ou_menos", "bom", "muito_bom")
   mul.confusion.data <- NULL
+  
   for (i in mul.class.levels){
     for (j in mul.class.levels){
       mul.confusion.data <- rbind(mul.confusion.data, 
                                   data.frame(class1 = i, 
                                              class2 = j,
-                                             values = sum((student.prediction$classe_prevista_multipla == i) & 
-                                                            (mp.labels$qualidade_multipla == j))))
+                                             values = sum((student.prediction[,"classe_prevista_multipla"] == i) & 
+                                                            (mp.labels[,"qualidade_multipla"] == j))))
     }
   }
   
-  mul.confusion.data$class1 <- factor(mul.confusion.data$class1, 
-                                      levels=mul.class.levels)
-  mul.confusion.data$class2 <- factor(mul.confusion.data$class2, 
-                                      levels=mul.class.levels)
+  mul.confusion.data$class1 <- factor(mul.confusion.data$class1, levels=mul.class.levels)
+  mul.confusion.data$class2 <- factor(mul.confusion.data$class2, levels=mul.class.levels)
   
   # Plot the Confusion Matrix
   gg <- ggplot(mul.confusion.data, aes(x = class1, y = class2)) + 
