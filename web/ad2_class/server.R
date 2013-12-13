@@ -2,8 +2,6 @@
 # SOURCE()
 ###############################################################################
 source("../ad2_functions/general.R")
-source("../ad2_functions/mp1.R")
-source("../ad2_functions/mp2.R")
 
 ###############################################################################
 # FUNCTIONS
@@ -16,11 +14,14 @@ GetMPData <- function(mp.dir, mp.number){
          },
          "2" = {
            list(wine_labels = read.csv(paste(mp.dir, "/hidden_data/mp2_fase2_rotulos_dos_vinhos.csv", sep = "")))
+         },
+         "3" = {
+           list(book_ratings_test = read.csv2(paste(mp.dir, "/hidden_data/mp3_book_crossing_teste_com_notas.csv", sep = "")))
          })
 }
 
 GetStudentMPData <- function(student.dir, mp.number){
-  CheckAndReadCsv <- function(csv.file){
+  CheckAndReadCSV <- function(csv.file){
     if (file.exists(csv.file)) {
       read.csv(csv.file)
     }else{
@@ -30,14 +31,18 @@ GetStudentMPData <- function(student.dir, mp.number){
   
   switch(mp.number, 
          "1" = {
-           list(phase1_models_sqe = CheckAndReadCsv(paste(student.dir, "/phase1_models_sqe.csv", sep = "")), 
-                phase1_predictions = CheckAndReadCsv(paste(student.dir, "/phase1_predictions.csv", sep = "")), 
-                phase2_models_sqe = CheckAndReadCsv(paste(student.dir, "/phase2_models_sqe.csv", sep = "")), 
-                phase2_predictions = CheckAndReadCsv(paste(student.dir, "/phase2_predictions.csv", sep = "")))
+           list(phase1_models_sqe = CheckAndReadCSV(paste(student.dir, "/phase1_models_sqe.csv", sep = "")), 
+                phase1_predictions = CheckAndReadCSV(paste(student.dir, "/phase1_predictions.csv", sep = "")), 
+                phase2_models_sqe = CheckAndReadCSV(paste(student.dir, "/phase2_models_sqe.csv", sep = "")), 
+                phase2_predictions = CheckAndReadCSV(paste(student.dir, "/phase2_predictions.csv", sep = "")))
          },
          "2" = {
-           list(model_validation = CheckAndReadCsv(paste(student.dir, "/mp2_validacao_modelos.csv", sep = "")), 
-                prediction = CheckAndReadCsv(paste(student.dir, "/mp2_predicao.csv", sep = "")))
+           list(model_validation = CheckAndReadCSV(paste(student.dir, "/mp2_validacao_modelos.csv", sep = "")), 
+                prediction = CheckAndReadCSV(paste(student.dir, "/mp2_predicao.csv", sep = "")))
+         },
+         "3" = {
+           list(model_validation = CheckAndReadCSV(paste(student.dir, "/mp3_validacao_modelos_treino.csv", sep = ""))) 
+           # prediction = CheckAndReadCSV(paste(student.dir, "/mp3_predicao_teste.csv", sep = "")))
          })
 }
 
@@ -46,16 +51,24 @@ GetStudentMPData <- function(student.dir, mp.number){
 ###############################################################################
 
 # All session variables and settings
-all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação")
+all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", "MP 3 - Recomendação")
 data.dir <- "data"
+
 theme_set(theme_bw(base_size=15))
 
 # shinyServer function
 shinyServer(function(input, output) {
-  
+   
   # ===========================================================================
   # REACTIVE SOURCEs and CONDUCTORs
   # ===========================================================================
+  # ---------------------------------------------------------------------------
+  # SESSION OBJECTS
+  # ---------------------------------------------------------------------------
+  session.objects <- list('mp1' = list(),
+                          'mp2' = list(),
+                          'mp3' = list(all_students_rmse_predictions = NULL))
+
   # ---------------------------------------------------------------------------
   # SIMPLE FUNCTIONS (called when necessary)
   # ---------------------------------------------------------------------------
@@ -97,7 +110,8 @@ shinyServer(function(input, output) {
   # ---------------------------------------------------------------------------
   
   # List of groups
-  output$student_group_list <- renderUI({
+  output$mini_project_tags <- renderUI({
+    
     student.data.dir <- paste(data.dir, "/mini_project_", mp.number(), "/student_data", sep = "")
     
     all.group.dir.names <- list.files(student.data.dir)
@@ -111,7 +125,16 @@ shinyServer(function(input, output) {
     })
     group.names <- as.character(group.names)
     
-    selectInput('student_group', label="", group.names, group.names[1])
+    tags <- list(p(strong("Grupo"), em("(com submissão)")),
+                 selectInput('student_group', label="", group.names, group.names[1]))
+    
+    if (mp.number() == "3"){
+      # MP3 - Add the Prediction Comparison checkbox
+      tags <- c(tags, 
+                list(br(), br(), p(strong("Todos"), em("(com submissão)")),
+                     checkboxInput("mp3_compare_predictions", "Comparar predições", F)))
+    }
+    return(tags)
   })
   
   # PDF Download button
@@ -275,6 +298,79 @@ shinyServer(function(input, output) {
       
     }, error=function(e){
       cat("Error: Wrong data >>", group.dir.name(), "(MP2: Prediction, Multiple Confusion Matrix)\n")
+    })
+  })
+  
+  # ---------------------------------------------------------------------------
+  # Render OUTPUT: Mini-Project 2
+  # ---------------------------------------------------------------------------
+  
+  output$mp3_download_analysis <- downloadHandler(
+    filename = function() {
+      paste(data.dir, "/mini_project_3/student_data/", 
+            group.dir.name(), "/mp3_analise.pdf", sep ="")
+    },
+    content = function(file) {
+      analysis.file <- paste(data.dir, "/mini_project_3/student_data/", 
+                             group.dir.name(), "/mp3_analise.pdf", sep ="")
+      
+      if (file.exists(analysis.file)){
+        file.copy(analysis.file, file)
+      }else{
+        boot.analysis.file <- paste(data.dir, 
+                                    "/mini_project_3/student_data/101_Boot_Student/mp3_analise.pdf", sep ="")
+        file.copy(boot.analysis.file, file)     
+      }
+    },
+    contentType = "application/pdf"
+  )
+  
+  output$mp3_ic_models_validation_plot <- renderPlot({
+    tryCatch(expr={
+      print(MP3GetCIModels(student.mp.data()$model_validation))
+    }, error=function(e) {
+      cat("Error: Wrong data >>", group.dir.name(), "(MP3: Model Validation, CI)\n")
+    })
+  })
+  
+  output$mp3_ic_models_prediction_plot <- renderPlot({
+    tryCatch(expr={
+      if (mp.number() == 3){
+        # Check the session object
+        if (is.null(session.objects$mp3$all_students_rmse_predictions)){
+          # Compare the RMSE value of the predictions between all the students 
+          # Get the prediction from all students and bind them in a single 
+          # model_validation data.frame (model_name, user, rmse)
+          student.data.dir <- paste(data.dir, "/mini_project_", mp.number(), "/student_data", sep = "")
+          
+          # Remove the 101_Boot_Student directory name
+          all.group.dirs <- list.files(student.data.dir)[-c(1)]
+          
+          all.students.rmse.per.user <- NULL
+          for(group in all.group.dirs){
+            
+            student.prediction <- read.csv(paste(paste(student.data.dir, "/", group, sep = ""),
+                                                 "/mp3_predicao_teste.csv", sep = ""))
+            rmse.per.user <- mp.data()$book_ratings_test[,-2]
+            rmse.per.user$Book.Rating <- sqrt((rmse.per.user$Book.Rating - student.prediction)^2)
+            rmse.per.user <- ddply(rmse.per.user, .(User.ID),
+                                   function(df) mean(df$Book.Rating, na.rm=T),
+                                   .progress="text")
+            colnames(rmse.per.user)[2] <- "rmse"
+            rmse.per.user$nome_modelo <- rep(group, nrow(rmse.per.user))
+            
+            all.students.rmse.per.user <- rbind(all.students.rmse.per.user, 
+                                                rmse.per.user)
+          }
+          
+          # Update the session object
+          session.objects$mp3$all_students_rmse_predictions <<- all.students.rmse.per.user
+        }
+        print(MP3GetCIModels(session.objects$mp3$all_students_rmse_predictions))
+      }
+    }, error=function(e) {        
+      print(e)
+      cat("Error: Wrong data >> All Students (MP3: Model Prediction, CI)\n")
     })
   })
   

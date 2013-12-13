@@ -9,6 +9,10 @@ library(gridExtra, quietly=T)
 library(boot, quietly=T)
 library(ROCR, quietly=T)
 
+source("../ad2_functions/mp1.R")
+source("../ad2_functions/mp2.R")
+source("../ad2_functions/mp3.R")
+
 ###############################################################################
 # FUNCTIONS
 ###############################################################################

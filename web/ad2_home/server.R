@@ -2,15 +2,13 @@
 # SOURCE()
 ###############################################################################
 source("../ad2_functions/general.R")
-source("../ad2_functions/mp1.R")
-source("../ad2_functions/mp2.R")
 
 ###############################################################################
 # SHINY SERVER
 ###############################################################################
 
 # All session variables and settings
-all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação")
+all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", "MP 3 - Recomendação")
 data.dir <- "data"
 
 theme_set(theme_bw(base_size=15))
@@ -71,7 +69,12 @@ shinyServer(function(input, output) {
                          accept=c('text/csv', 'text/comma-separated-values', '.csv')),
                fileInput('mp2_prediction_correct_file', em("2.2) Valores Reais da Qualidade dos Vinhos (mp2_predicao_real.csv)"),
                          accept=c('text/csv', 'text/comma-separated-values', '.csv'))
-               ))
+               ),
+           "3"=
+             list(
+               fileInput('mp3_model_validation_file', em('1) Comparação dos Modelos (mp3_validacao_modelos_treino.csv)'),
+                         accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')))
+           )
   })
   
   # ---------------------------------------------------------------------------
@@ -139,6 +142,20 @@ shinyServer(function(input, output) {
       
       # Plot the Confusion Matrix
       print(Mp2GetConfMatrixMultiple(data.prediction, data.prediction.correct))
+    }
+  })
+  
+  # ---------------------------------------------------------------------------
+  # Mini-Project 3
+  # ---------------------------------------------------------------------------
+  
+  output$mp3_ic_models_plot <- renderPlot({
+    model.validation.file <- input$mp3_model_validation_file
+    if (!is.null(model.validation.file)){
+      model.validation <- read.csv(model.validation.file$datapath, header=T)
+      
+      # Plot the CIs
+      print(MP3GetCIModels(model.validation))
     }
   })
   

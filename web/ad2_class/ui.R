@@ -3,10 +3,10 @@
 ###############################################################################
 
 # Global variables
-all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação")
+all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", "MP 3 - Recomendação")
 
 title <- "Análise de Dados II"
-windowTitle <- "Análise de Dados II"
+windowTitle <- "Análise de Dados II - Sala de Aula"
 subtitle <- "Visualizando os mini-projetos em sala de aula"
 
 # shinyUI function
@@ -31,8 +31,7 @@ shinyUI(bootstrapPage(
                                            "download_mp_pdf_button", "Download PDF"),
                             tags$hr(),
                             
-                            p(strong("Grupo"), em("(com submissão)")),
-                            uiOutput("student_group_list"))),
+                            uiOutput("mini_project_tags"))),
               
               # MAIN 
               div(id="main-output", class = "span9", 
@@ -69,6 +68,7 @@ shinyUI(bootstrapPage(
                                                 br(), br(),
                                                 value = "phase2"))
                     ),
+                    
                     conditionalPanel(condition=paste("input.mini_project == '", all.mini.projects[2], "'", sep =""),
                                      h3("Mini-Projeto 2 - Classificação", style="text-align:center"),
                                      tags$hr(),
@@ -89,7 +89,27 @@ shinyUI(bootstrapPage(
                                      br(),
                                      em("Matriz de Confusão - Qualidade Múltipla"),
                                      plotOutput("mp2_confusion_matrix_mul"),
-                                     br())
+                                     br()),
+                    
+                    conditionalPanel(condition=paste("input.mini_project == '", all.mini.projects[3], "'", sep =""),
+                                     h3("Mini-Projeto 3 - Recomendação", style="text-align:center"),
+                                     tags$hr(),
+                                     
+                                     h4("Análise Escrita"),
+                                     downloadButton("mp3_download_analysis", "Download", 
+                                                    class="btn btn-primary"),
+                                     tags$hr(),
+                                     
+                                     conditionalPanel(condition=paste("input.mp3_compare_predictions == false", sep =""),
+                                                      h4("Análise Visual - Comparação de Modelos (validação)"),
+                                                      em("Intervalos de Confiança (95%) da Média - RMSE"),
+                                                      plotOutput("mp3_ic_models_validation_plot"),
+                                                      tags$hr()),
+                                     conditionalPanel(condition=paste("input.mp3_compare_predictions == true", sep =""),
+                                                      h4("Análise Visual - Comparação de Modelos (predição)"),
+                                                      em("Intervalos de Confiança (95%) da Média - RMSE"),
+                                                      plotOutput("mp3_ic_models_prediction_plot"),
+                                                      tags$hr()))
                   ))))
   )
 )

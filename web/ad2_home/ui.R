@@ -3,13 +3,16 @@
 ###############################################################################
 
 # Global variables
-all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação")
+all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", "MP 3 - Recomendação")
 
 title <- "Análise de Dados II"
-windowTitle <- "Análise de Dados II - Home"
+windowTitle <- "Análise de Dados II - Casa"
 subtitle <- "Visualizando os mini-projetos em casa"
 
-phases <- c("Fase 1", "Fase 2")
+# phases <- c("Fase 1", "Fase 2")
+
+# TODO:
+# Add button in the ALERT MESSAGE: https://github.com/AnalytixWare/ShinySky 
 
 # shinyUI function
 shinyUI(bootstrapPage(
@@ -67,7 +70,15 @@ shinyUI(bootstrapPage(
                                      br(),
                                      em("Matriz de Confusão - Qualidade Múltipla"),
                                      plotOutput("mp2_confusion_matrix_mul"),
-                                     br())
+                                     br()),
+                    
+                    conditionalPanel(condition=paste("input.mini_project == '", all.mini.projects[3], "'", sep =""),
+                                     h3("Mini-Projeto 3 - Recomendação", style="text-align:center"),
+                                     tags$hr(),
+                                     
+                                     h4("Análise Visual - Comparação dos Modelos"),
+                                     em("Intervalos de Confiança (95%) da Média - RMSE"),
+                                     plotOutput("mp3_ic_models_plot"))
                   )
               )
           )
