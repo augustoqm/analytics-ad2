@@ -32,4 +32,4 @@ Atenção
 -------
 As versões do aplicativo **ad2_class** também estão disponíveis nesse repositório, 
 no entanto, caso execute perceberá que faltam informações pois as submissões dos 
-alunos e as bases de dados não são foram publicadas.
+alunos e as bases de dados não são publicadas.
