@@ -6,7 +6,7 @@ Requisitos
 ----------
 Para executar o aplicativo **ad2_home** é necessário instalar alguns pacotes R:
 ```R
-install.packages(c("shiny", "plyr", "reshape", "ggplot2", "gridExtra", "boot", "ROCR")) 
+install.packages(c("shiny", "plyr", "reshape", "ggplot2", "gridExtra", "boot", "ROCR"))
 ```
 
 Tutorial
