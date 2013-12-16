@@ -8,7 +8,8 @@ source("../ad2_functions/general.R")
 ###############################################################################
 
 # All session variables and settings
-all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", "MP 3 - Recomendação")
+all.mini.projects <- c("MP 1 - Regressao", "MP 2 - Classificacao", "MP 3 - Recomendacao")
+data.dir <- "data"
 
 theme_set(theme_bw(base_size=15))
 options(shiny.maxRequestSize=30*1024^2)
@@ -32,10 +33,10 @@ shinyServer(function(input, output) {
   # PDF Download button
   output$download_mp_pdf_button <- downloadHandler(
     filename = function() {
-      paste(all.mini.projects[mp.number()], ".pdf", sep ="")
+      paste(data.dir, "/", all.mini.projects[mp.number()], ".pdf", sep ="")
     },
     content = function(file) {
-      mp.file <- paste(all.mini.projects[mp.number()], ".pdf", sep ="")
+      mp.file <- paste(data.dir, "/", all.mini.projects[mp.number()], ".pdf", sep ="")
       
       if (file.exists(mp.file)){
         file.copy(mp.file, file)

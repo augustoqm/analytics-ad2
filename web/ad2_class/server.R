@@ -51,7 +51,7 @@ GetStudentMPData <- function(student.dir, mp.number){
 ###############################################################################
 
 # All session variables and settings
-all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", "MP 3 - Recomendação")
+all.mini.projects <- c("MP 1 - Regressao", "MP 2 - Classificacao", "MP 3 - Recomendacao")
 data.dir <- "data"
 
 theme_set(theme_bw(base_size=15))
@@ -150,7 +150,7 @@ shinyServer(function(input, output) {
       if (file.exists(mp.file)){
         file.copy(mp.file, file)
       }else{
-        boot.analysis.file <- paste("MP 0 - Default.pdf", sep ="")
+        boot.analysis.file <- paste(data.dir, "mini_project_default/MP 0 - Default.pdf", sep ="")
         file.copy(boot.analysis.file, file)    
       }
     },
