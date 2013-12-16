@@ -1,7 +1,6 @@
 analytics-ad2
 =============
 
-Repositório de Código para os aplicativos desenvolvidos para a disciplina Análise de Dados 2.
 
 Requisitos
 ----------
