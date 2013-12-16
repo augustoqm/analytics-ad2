@@ -140,10 +140,12 @@ shinyServer(function(input, output) {
   # PDF Download button
   output$download_mp_pdf_button <- downloadHandler(
     filename = function() {
-      paste(all.mini.projects[mp.number()], ".pdf", sep ="")
+      paste(data.dir, "/mini_project_", mp.number(), "/", 
+            all.mini.projects[mp.number()], ".pdf", sep ="")
     },
     content = function(file) {
-      mp.file <- paste(all.mini.projects[mp.number()], ".pdf", sep ="")
+      mp.file <- paste(data.dir, "/mini_project_", mp.number(), "/", 
+                       all.mini.projects[mp.number()], ".pdf", sep ="")
       
       if (file.exists(mp.file)){
         file.copy(mp.file, file)
