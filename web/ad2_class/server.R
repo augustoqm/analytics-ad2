@@ -352,6 +352,16 @@ shinyServer(function(input, output) {
             student.prediction <- read.csv(paste(paste(student.data.dir, "/", group, sep = ""),
                                                  "/mp3_predicao_teste.csv", sep = ""))
             rmse.per.user <- mp.data()$book_ratings_test[,-2]
+            
+            # Check the size difference between the student prediction and hidden ratings
+            diff <- nrow(rmse.per.user) - nrow(student.prediction)
+            if (diff > 0){
+              student.prediction <- rbind(student.prediction, data.frame(nota=rep(0, diff)))
+            }
+            if(diff < 0){
+              student.prediction <- student.prediction[1:nrow(rmse.per.user),]
+            }
+            
             rmse.per.user$Book.Rating <- sqrt((rmse.per.user$Book.Rating - student.prediction)^2)
             rmse.per.user <- ddply(rmse.per.user, .(User.ID),
                                    function(df) mean(df$Book.Rating, na.rm=T),
