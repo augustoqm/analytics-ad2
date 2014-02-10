@@ -73,8 +73,14 @@ shinyServer(function(input, output) {
            "3"=
              list(
                fileInput('mp3_model_validation_file', em('1) Comparação dos Modelos (mp3_validacao_modelos_treino.csv)'),
-                         accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')))
-           )
+                         accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))
+               ),
+           "4"=
+             list(
+               fileInput('mp4_model_validation_file', em('1) Comparação dos Modelos (mp4_validacao_faseX.csv)'),
+                         accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))
+               )
+    )    
   })
   
   # ---------------------------------------------------------------------------
@@ -159,4 +165,27 @@ shinyServer(function(input, output) {
     }
   })
   
+  # ---------------------------------------------------------------------------
+  # Mini-Project 4
+  # ---------------------------------------------------------------------------
+  
+  output$mp4_err_validation_plot <- renderPlot({
+    model.validation.file <- input$mp4_model_validation_file
+    if (!is.null(model.validation.file)){
+      model.validation <- read.csv(model.validation.file$datapath, header=T)
+      
+      # Plot the Boxplots
+      print(MP4GetBoxplotValidation(model.validation))
+    }
+  })
+  
+  output$mp4_err_timed_validation_plot <- renderPlot({
+    model.validation.file <- input$mp4_model_validation_file
+    if (!is.null(model.validation.file)){
+      model.validation <- read.csv(model.validation.file$datapath, header=T)
+      
+      # Plot the Time Series
+      print(MP4GetTemporalValidation(model.validation))
+    }
+  })
 })

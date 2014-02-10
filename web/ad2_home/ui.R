@@ -3,7 +3,8 @@
 ###############################################################################
 
 # Global variables
-all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", "MP 3 - Recomendação")
+all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", 
+                       "MP 3 - Recomendação", "MP 4 - Séries Temporais")
 
 title <- "Análise de Dados II"
 windowTitle <- "Análise de Dados II - Casa"
@@ -78,7 +79,17 @@ shinyUI(bootstrapPage(
                                      
                                      h4("Análise Visual - Comparação dos Modelos"),
                                      em("Intervalos de Confiança (95%) da Média - RMSE"),
-                                     plotOutput("mp3_ic_models_plot"))
+                                     plotOutput("mp3_ic_models_plot")),
+                    
+                    conditionalPanel(condition=paste("input.mini_project == '", all.mini.projects[4], "'", sep =""),
+                                     h3("Mini-Projeto 4 - Séries Temporais", style="text-align:center"),
+                                     tags$hr(),
+                                     
+                                     h4("Análise Visual - Comparação dos Modelos"),
+                                     em("Boxplot - Erro Absoluto"),
+                                     plotOutput("mp4_err_validation_plot", height = "500px"),
+                                     em("Série Temporal - Erro Absoluto"),
+                                     plotOutput("mp4_err_timed_validation_plot", height = "600px"))
                   )
               )
           )

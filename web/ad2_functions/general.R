@@ -8,10 +8,12 @@ library(ggplot2, quietly=T)
 library(gridExtra, quietly=T)
 library(boot, quietly=T)
 library(ROCR, quietly=T)
+library(scales, quietly=T)
 
 source("../ad2_functions/mp1.R")
 source("../ad2_functions/mp2.R")
 source("../ad2_functions/mp3.R")
+source("../ad2_functions/mp4.R")
 
 ###############################################################################
 # FUNCTIONS
