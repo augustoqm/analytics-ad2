@@ -8,7 +8,7 @@ source("../ad2_functions/general.R")
 ###############################################################################
 
 # All session variables and settings
-all.mini.projects <- c("MP 1 - Regressao", "MP 2 - Classificacao", "MP 3 - Recomendacao")
+all.mini.projects <- c("MP 1 - Regressao", "MP 2 - Classificacao", "MP 3 - Recomendacao", "MP 4 - Series Temporais")
 data.dir <- "data"
 
 theme_set(theme_bw(base_size=15))
