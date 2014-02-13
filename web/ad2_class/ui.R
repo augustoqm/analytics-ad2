@@ -3,7 +3,8 @@
 ###############################################################################
 
 # Global variables
-all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", "MP 3 - Recomendação")
+all.mini.projects <- c("MP 1 - Regressão", "MP 2 - Classificação", 
+                       "MP 3 - Recomendação", "MP 4 - Séries Temporais")
 
 title <- "Análise de Dados II"
 windowTitle <- "Análise de Dados II - Sala de Aula"
@@ -25,7 +26,7 @@ shinyUI(bootstrapPage(
               div(id="sidebar-input", class = "span3", 
                   tags$form(class = "well", 
                             strong("Mini-Projeto"),
-                            selectInput('mini_project', label="", all.mini.projects, all.mini.projects[1]),
+                            selectInput('mini_project', label="", all.mini.projects, all.mini.projects[4]),
                             br(),
                             downloadButton(class="btn btn-primary btn-mini", 
                                            "download_mp_pdf_button", "Download PDF"),
@@ -109,7 +110,45 @@ shinyUI(bootstrapPage(
                                                       h4("Análise Visual - Comparação de Modelos (predição)"),
                                                       em("Intervalos de Confiança (95%) da Média - RMSE"),
                                                       plotOutput("mp3_ic_models_prediction_plot"),
-                                                      tags$hr()))
+                                                      tags$hr())),
+                    
+                    
+                    conditionalPanel(condition=paste("input.mini_project == '", all.mini.projects[4], "'", sep =""),
+                                     h3("Mini-Projeto 4 - Séries Temporais", style="text-align:center"),
+                                     tags$hr(),
+                                     
+                                     h4("Análise Escrita"),
+                                     downloadButton("mp4_download_analysis", "Download", 
+                                                    class="btn btn-primary"),
+                                     br(),br(),
+                                     
+                                     tabsetPanel(id="phases",
+                                                 tabPanel(title="Fase 1",
+                                                          h4("Análise Visual - Comparação dos Modelos (validação)"),
+                                                          em("Boxplot - Erro Absoluto"),
+                                                          plotOutput("mp4_phase1_err_validation_plot"),
+                                                          em("Série Temporal - Erro Absoluto"),
+                                                          plotOutput("mp4_phase1_err_timed_validation_plot", height = "600px"),
+                                                          br(),
+                                                          h4("Análise Visual - Modelo (predição)"),
+                                                          em("Boxplot - Erro Absoluto"),
+                                                          plotOutput("mp4_phase1_err_prediction_plot"),
+                                                          em("Série Temporal - Real vs. Previsto"),
+                                                          plotOutput("mp4_phase1_real_vs_predicted_plot"),
+                                                          value = "phase1"),
+                                                 tabPanel(title="Fase 2",
+                                                          h4("Análise Visual - Comparação dos Modelos (validação)"),
+                                                          em("Boxplot - Erro Absoluto"),
+                                                          plotOutput("mp4_phase2_err_validation_plot"),
+                                                          em("Série Temporal - Erro Absoluto"),
+                                                          plotOutput("mp4_phase2_err_timed_validation_plot", height = "600px"),
+                                                          br(),
+                                                          h4("Análise Visual - Modelo (predição)"),
+                                                          em("Boxplot - Erro Absoluto"),
+                                                          plotOutput("mp4_phase2_err_prediction_plot"),
+                                                          em("Série Temporal - Real vs. Previsto"),
+                                                          plotOutput("mp4_phase2_real_vs_predicted_plot"),
+                                                          value = "phase2")))
                   ))))
   )
 )

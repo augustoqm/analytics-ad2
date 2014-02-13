@@ -17,6 +17,9 @@ GetMPData <- function(mp.dir, mp.number){
          },
          "3" = {
            list(book_ratings_test = read.csv2(paste(mp.dir, "/hidden_data/mp3_book_crossing_teste_com_notas.csv", sep = "")))
+         },
+         "4" = {
+           list(taxa_juros_test = read.csv(paste(mp.dir, "/hidden_data/test-taxa_de_juros.csv", sep = "")))
          })
 }
 
@@ -43,6 +46,12 @@ GetStudentMPData <- function(student.dir, mp.number){
          "3" = {
            list(model_validation = CheckAndReadCSV(paste(student.dir, "/mp3_validacao_modelos_treino.csv", sep = ""))) 
            # prediction = CheckAndReadCSV(paste(student.dir, "/mp3_predicao_teste.csv", sep = "")))
+         },
+         "4" = {
+           list(phase1_model_validation = CheckAndReadCSV(paste(student.dir, "/mp4_validacao_fase1.csv", sep = "")),
+                phase1_model_prediction = CheckAndReadCSV(paste(student.dir, "/mp4_predicao_fase1.csv", sep = "")),
+                phase2_model_validation = CheckAndReadCSV(paste(student.dir, "/mp4_validacao_fase2.csv", sep = "")),
+                phase2_model_prediction  = CheckAndReadCSV(paste(student.dir, "/mp4_predicao_fase2.csv", sep = "")))
          })
 }
 
@@ -51,14 +60,15 @@ GetStudentMPData <- function(student.dir, mp.number){
 ###############################################################################
 
 # All session variables and settings
-all.mini.projects <- c("MP 1 - Regressao", "MP 2 - Classificacao", "MP 3 - Recomendacao")
+all.mini.projects <- c("MP 1 - Regressao", "MP 2 - Classificacao",
+                       "MP 3 - Recomendacao", "MP 4 - Series Temporais")
 data.dir <- "data"
 
 theme_set(theme_bw(base_size=15))
 
 # shinyServer function
 shinyServer(function(input, output) {
-   
+  
   # ===========================================================================
   # REACTIVE SOURCEs and CONDUCTORs
   # ===========================================================================
@@ -67,8 +77,9 @@ shinyServer(function(input, output) {
   # ---------------------------------------------------------------------------
   session.objects <- list('mp1' = list(),
                           'mp2' = list(),
-                          'mp3' = list(all_students_rmse_predictions = NULL))
-
+                          'mp3' = list(all_students_rmse_predictions = NULL),
+                          'mp4' = list())
+  
   # ---------------------------------------------------------------------------
   # SIMPLE FUNCTIONS (called when necessary)
   # ---------------------------------------------------------------------------
@@ -100,7 +111,12 @@ shinyServer(function(input, output) {
     student.group.dir <- paste(mp.dir(), "/student_data/", group.dir.name(), sep = "")
     GetStudentMPData(student.group.dir, mp.number())
   })
-  
+
+  # MP 4 Specific
+  ts.interval<- reactive({
+    return (list(validation = input$ts_interval_validation,
+                prediction = input$ts_interval_prediction))
+  })
   
   # ===========================================================================
   # REACTIVE ENDPOINTS
@@ -134,6 +150,16 @@ shinyServer(function(input, output) {
                 list(br(), br(), p(strong("Todos"), em("(com submissão)")),
                      checkboxInput("mp3_compare_predictions", "Comparar predições", F)))
     }
+    if (mp.number() == "4"){
+      # MP4 - Add the Time-Series Sliders (validation and prediction)
+      tags <- c(tags, 
+                list(br(), br(), 
+                     sliderInput("ts_interval_validation", "Intervalo da Série Temporal (validação)", 
+                                 min = 0, max = 1, value = c(0, 1), step = .01, format="#%"),
+                     sliderInput("ts_interval_prediction", "Intervalo da Série Temporal (predição)", 
+                                 min = 0, max = 1, value = c(0, 1), step = .01, format="#%")))
+    }
+    
     return(tags)
   })
   
@@ -302,7 +328,7 @@ shinyServer(function(input, output) {
   })
   
   # ---------------------------------------------------------------------------
-  # Render OUTPUT: Mini-Project 2
+  # Render OUTPUT: Mini-Project 3
   # ---------------------------------------------------------------------------
   
   output$mp3_download_analysis <- downloadHandler(
@@ -379,8 +405,112 @@ shinyServer(function(input, output) {
         print(MP3GetCIModels(session.objects$mp3$all_students_rmse_predictions))
       }
     }, error=function(e) {        
-      print(e)
       cat("Error: Wrong data >> All Students (MP3: Model Prediction, CI)\n")
+    })
+  })
+  
+  # ---------------------------------------------------------------------------
+  # Render OUTPUT: Mini-Project 4
+  # ---------------------------------------------------------------------------
+  
+  output$mp4_download_analysis <- downloadHandler(
+    filename = function() {
+      paste(data.dir, "/mini_project_4/student_data/", 
+            group.dir.name(), "/mp4_analises.pdf", sep ="")
+    },
+    content = function(file) {
+      analysis.file <- paste(data.dir, "/mini_project_4/student_data/", 
+                             group.dir.name(), "/mp4_analises.pdf", sep ="")
+      
+      if (file.exists(analysis.file)){
+        file.copy(analysis.file, file)
+      }else{
+        boot.analysis.file <- paste(data.dir, 
+                                    "/mini_project_4/student_data/101_Boot_Student/mp4_analises.pdf", sep ="")
+        file.copy(boot.analysis.file, file)
+      }
+    },
+    contentType = "application/pdf"
+  )
+  
+  output$mp4_phase1_err_validation_plot <- renderPlot({
+    tryCatch(expr={
+      # Plot the Boxplots
+      print(MP4GetBoxplotValidation(student.mp.data()$phase1_model_validation))
+    }, error=function(e) {
+      cat("Error: Wrong data >>", group.dir.name(), "(MP4 - Phase 1: Model Error Validation, Boxplot)\n")
+    })
+  })
+  
+  output$mp4_phase1_err_timed_validation_plot <- renderPlot({
+    tryCatch(expr={
+      # Plot the Time Series
+      print(MP4GetTemporalValidation(student.mp.data()$phase1_model_validation, 
+                                     ts.interval()$validation))
+    }, error=function(e) {
+      cat("Error: Wrong data >>", group.dir.name(), "(MP4 - Phase 1: Model Error Temporal Validation, Time Series)\n")
+    })
+  })
+  
+  output$mp4_phase1_err_prediction_plot <- renderPlot({
+    tryCatch(expr={
+      # Plot the Boxplots
+      print(MP4GetBoxplotPrediction(student.mp.data()$phase1_model_prediction,
+                                    mp.data()$taxa_juros_test))
+    }, error=function(e) {
+      cat("Error: Wrong data >>", group.dir.name(), "(MP4 - Phase 1: Model Error Validation, Boxplot)\n")
+    })
+  })
+  
+  output$mp4_phase1_real_vs_predicted_plot <- renderPlot({
+    tryCatch(expr={
+      # Plot the Time Series
+      print(MP4GetTSRealVsPrediction(student.mp.data()$phase1_model_prediction,
+                                     mp.data()$taxa_juros_test,
+                                     ts.interval()$prediction))
+    }, error=function(e) {
+      cat("Error: Wrong data >>", group.dir.name(), "(MP4 - Phase 1: Model Prediction, Time Series)\n")
+    })
+  })
+  
+  
+  output$mp4_phase2_err_validation_plot <- renderPlot({
+    tryCatch(expr={
+      # Plot the Boxplots
+      print(MP4GetBoxplotValidation(student.mp.data()$phase2_model_validation))
+    }, error=function(e) {
+      cat("Error: Wrong data >>", group.dir.name(), "(MP4 - Phase 2: Model Error Validation, Boxplot)\n")
+    })
+  })
+  
+  output$mp4_phase2_err_timed_validation_plot <- renderPlot({
+    tryCatch(expr={
+      # Plot the Time Series
+      print(MP4GetTemporalValidation(student.mp.data()$phase2_model_validation, 
+                                     ts.interval()$validation))
+    }, error=function(e) {
+      cat("Error: Wrong data >>", group.dir.name(), "(MP4 - Phase 2: Model Error Temporal Validation, Time Series)\n")
+    })
+  })
+  
+  output$mp4_phase2_err_prediction_plot <- renderPlot({
+    tryCatch(expr={
+      # Plot the Boxplots
+      print(MP4GetBoxplotPrediction(student.mp.data()$phase2_model_prediction,
+                                    mp.data()$taxa_juros_test))
+    }, error=function(e) {
+      cat("Error: Wrong data >>", group.dir.name(), "(MP4 - Phase 2: Model Error Validation, Boxplot)\n")
+    })
+  })
+  
+  output$mp4_phase2_real_vs_predicted_plot <- renderPlot({
+    tryCatch(expr={
+      # Plot the Time Series
+      print(MP4GetTSRealVsPrediction(student.mp.data()$phase2_model_prediction,
+                                     mp.data()$taxa_juros_test,
+                                     ts.interval()$prediction))
+    }, error=function(e) {
+      cat("Error: Wrong data >>", group.dir.name(), "(MP4 - Phase 2: Model Prediction, Time Series)\n")
     })
   })
   

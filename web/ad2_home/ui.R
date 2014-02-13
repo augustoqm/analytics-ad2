@@ -36,9 +36,7 @@ shinyUI(bootstrapPage(
                             downloadButton(class="btn btn-primary btn-mini", 
                                            "download_mp_pdf_button", "Download PDF"),
                             tags$hr(),
-                            
-                            p(strong("Upload de Dados")),
-                            uiOutput("mp_upload_files")
+                            uiOutput("mp_tags")
                   )),
               
               # MAIN 
@@ -87,7 +85,7 @@ shinyUI(bootstrapPage(
                                      
                                      h4("Análise Visual - Comparação dos Modelos"),
                                      em("Boxplot - Erro Absoluto"),
-                                     plotOutput("mp4_err_validation_plot", height = "500px"),
+                                     plotOutput("mp4_err_validation_plot"),
                                      em("Série Temporal - Erro Absoluto"),
                                      plotOutput("mp4_err_timed_validation_plot", height = "600px"))
                   )

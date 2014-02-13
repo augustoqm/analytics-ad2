@@ -50,11 +50,12 @@ shinyServer(function(input, output) {
   # Render HTML reactively 
   # ---------------------------------------------------------------------------
   
-  # Upload data files buttons
-  output$mp_upload_files <- renderUI({
+  # MP TAGs (upload data files buttons and more)
+  output$mp_tags <- renderUI({
     switch(mp.number(), 
            "1"=
              list(
+               p(strong("Upload de Dados")),
                fileInput('mp1_sqe_file', em('1) Validação dos Modelos (faseX_sqe_modelos.csv)'),
                          accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
                fileInput('mp1_prediction_file', em('2.1) Predição dos Atributos Meta (faseX_predicao.csv)'),
@@ -64,6 +65,7 @@ shinyServer(function(input, output) {
              ),
            "2"=
              list(
+               p(strong("Upload de Dados")),
                fileInput('mp2_model_validation_file', em('1) Comparação dos Modelos (mp2_validacao_modelos.csv)'),
                          accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
                fileInput('mp2_prediction_file', em("2.1) Predição da Qualidade dos Vinhos (mp2_predicao.csv)"),
@@ -73,11 +75,13 @@ shinyServer(function(input, output) {
                ),
            "3"=
              list(
+               p(strong("Upload de Dados")),
                fileInput('mp3_model_validation_file', em('1) Comparação dos Modelos (mp3_validacao_modelos_treino.csv)'),
                          accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))
                ),
            "4"=
              list(
+               p(strong("Upload de Dados")),
                fileInput('mp4_model_validation_file', em('1) Comparação dos Modelos (mp4_validacao_faseX.csv)'),
                          accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
                sliderInput("ts_interval", "Intervalo da Série Temporal", 
