@@ -8,7 +8,8 @@ source("../ad2_functions/general.R")
 ###############################################################################
 
 # All session variables and settings
-all.mini.projects <- c("MP 1 - Regressao", "MP 2 - Classificacao", "MP 3 - Recomendacao", "MP 4 - Series Temporais")
+all.mini.projects <- c("MP 1 - Regressao", "MP 2 - Classificacao", 
+                       "MP 3 - Recomendacao", "MP 4 - Series Temporais")
 data.dir <- "data"
 
 theme_set(theme_bw(base_size=15))
@@ -78,7 +79,9 @@ shinyServer(function(input, output) {
            "4"=
              list(
                fileInput('mp4_model_validation_file', em('1) Comparação dos Modelos (mp4_validacao_faseX.csv)'),
-                         accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))
+                         accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
+               sliderInput("ts_interval", "Intervalo da Série Temporal", 
+                           min = 0, max = 1, value = c(0, 1), step = .01, format="#%")
                )
     )    
   })
@@ -185,7 +188,7 @@ shinyServer(function(input, output) {
       model.validation <- read.csv(model.validation.file$datapath, header=T)
       
       # Plot the Time Series
-      print(MP4GetTemporalValidation(model.validation))
+      print(MP4GetTemporalValidation(model.validation, input$ts_interval))
     }
   })
 })

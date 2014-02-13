@@ -15,12 +15,18 @@ MP4GetBoxplotValidation <- function(model.validation){
   return(gg)  
 }
 
-MP4GetTemporalValidation <- function(model.validation){
+MP4GetTemporalValidation <- function(model.validation, ts.interval=c(0,1)){
+
+  # Select the validation date
+  model.validation$data_horizonte <- as.Date(model.validation$data_horizonte)
+  all.dates <- sort(model.validation$data_horizonte)
+  selected.dates <- all.dates[c(ts.interval[1] * length(all.dates) + 1, ts.interval[2] * length(all.dates))]
+  model.validation <- subset(model.validation, data_horizonte >= selected.dates[1] & data_horizonte <= selected.dates[2])
   
   gg <- ggplot(model.validation, aes(x=as.Date(data_horizonte), y=erro_absoluto, col=nome_modelo)) +
     geom_line() + 
     facet_wrap(~nome_modelo, ncol=1) + 
-    scale_x_date(labels=date_format("%b-%Y"), breaks = '3 month') + 
+    scale_x_date(labels=date_format("%b-%Y")) + 
     labs(list(x="Tempo", y="Erro Absoluto")) + 
     theme(legend.position='none',
           axis.text.x = element_text(angle = 45, hjust = 1))
