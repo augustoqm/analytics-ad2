@@ -26,7 +26,7 @@ shinyUI(bootstrapPage(
               div(id="sidebar-input", class = "span3", 
                   tags$form(class = "well", 
                             strong("Mini-Projeto"),
-                            selectInput('mini_project', label="", all.mini.projects, all.mini.projects[4]),
+                            selectInput('mini_project', label="", all.mini.projects, all.mini.projects[1]),
                             br(),
                             downloadButton(class="btn btn-primary btn-mini", 
                                            "download_mp_pdf_button", "Download PDF"),
