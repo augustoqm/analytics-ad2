@@ -5,8 +5,8 @@
 MP4GetBoxplotValidation <- function(model.validation){
   
   is.err.negative <- model.validation$erro_absoluto < 0
-  model.validation$tipo_erro[!is.err.negative] <- rep('positivo', sum(! is.err.negative))
-  model.validation$tipo_erro[is.err.negative] <- rep('negativo', sum(is.err.negative))
+  model.validation$tipo_erro[!is.err.negative] <- 'positivo'
+  model.validation$tipo_erro[is.err.negative] <- 'negativo'
   
   gg <- ggplot(model.validation, aes(x=nome_modelo, y=erro_absoluto, fill=tipo_erro)) +
     geom_boxplot(notch=T, outlier.shape=21) + 
@@ -45,8 +45,8 @@ MP4GetBoxplotPrediction <- function(student.prediction, real.juros){
   
   # Count the positive and negative errors
   is.err.negative <- model.prediction$erro_absoluto < 0
-  model.prediction$tipo_erro <- rep('positivo', nrow(model.prediction))
-  model.prediction$tipo_erro[is.err.negative] <- rep('negativo', sum(is.err.negative, na.rm=T))
+  model.prediction$tipo_erro <- 'positivo'
+  model.prediction$tipo_erro[is.err.negative] <- 'negativo'
   
   # Define a name to the model
   model.prediction$nome_modelo <- rep("Melhor Modelo", nrow(model.prediction))
